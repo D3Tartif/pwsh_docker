@@ -31,16 +31,18 @@ function list_container {
 
 function install_docker {
     Write-Host "install of hyper-v feature"
-    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+    Enable-WindowsOptionalFeature -Online -FeatureName ("Microsoft-Hyper-V", "Containers", "VirtualMachinePlatform") -All -NoRestart
     
     Write-Host "download and launch of docker desktop"
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_docker,"$env:APPDATA\installdocker.exe")
     Start-Process ("$env:APPDATA\installdocker.exe")
+    Write-Host "wait for the end of installation before pressing a key"
+    Read-Host
 
-    Write-Host "install wsl2"
-    (New-Object System.Net.WebClient).DownloadFile($downloadlink_wsl2,"$env:APPDATA\installwsl.msi")
-    Start-Process ("$env:APPDATA\installwsl.msi")
-    
+    #Write-Host "install wsl2"
+    #(New-Object System.Net.WebClient).DownloadFile($downloadlink_wsl2,"$env:APPDATA\installwsl.msi")
+    #Start-Process ("$env:APPDATA\installwsl.msi")
+
     Write-Host "Please, follow the install wizard and then save all your works as the machine will restart after a keypress!"
     Read-Host
     Restart-Computer
