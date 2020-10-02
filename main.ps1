@@ -12,6 +12,7 @@
 $menu_choice
 
 $downloadlink_docker = "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe"
+$downloadlink_wsl2 = "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi"
 
 # Functions
 
@@ -29,7 +30,12 @@ function list_container {
 }
 
 function install_docker {
+    Write-Host "install of hyper-v feature"
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+    Write-Host "install wsl2"
+    (New-Object System.Net.WebClient).DownloadFile($downloadlink_wsl2,"$env:APPDATA\installwsl.msi")
+    Start-Process ("$env:APPDATA\installwsl.msi")
+    Write-Host "download and launch of docker desktop"
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_docker,"$env:APPDATA\installdocker.msi")
     Start-Process ("$env:APPDATA\installdocker.msi")
     Write-Host "Please, follow the install wizard and then save all your works as the machine will restart after a keypress!"
