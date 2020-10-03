@@ -9,8 +9,9 @@
 ################################################
 
 # variables
+    # main variables
 $menu_choice
-
+    # install docker variables
 $downloadlink_docker = "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe"
 $downloadlink_wsl2 = "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi"
 
@@ -30,7 +31,8 @@ function list_container {
 }
 
 function install_docker {
-    Write-Host "install of hyper-v feature"
+    Clear-Host
+    Write-Host "install of hyper-v requirements features"
     Enable-WindowsOptionalFeature -Online -FeatureName ("Microsoft-Hyper-V", "Containers", "VirtualMachinePlatform") -All -NoRestart
     
     # download of wsl 2 and add it to hklm to launch install at next restart
@@ -39,8 +41,7 @@ function install_docker {
 
     Write-Host "download and launch of docker desktop then reboot"
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_docker,"$env:APPDATA\installdocker.exe")
-    $p_installdocker = Start-Process ("$env:APPDATA\installdocker.exe")
-    $p_installdocker.Start() | Out-Null
+    Start-Process ("$env:APPDATA\installdocker.exe")
     
     Write-Host "Press Enter to continue"
     Read-Host
