@@ -1,8 +1,8 @@
 ################################################
 # Docker manage admin console                  #
 # Author: Cedric F                             #
-# Creation data: 2/1/2020                      #
-# Last change date: 2/1/2020                   #
+# Creation data: 2/10/2020                     #
+# Last change date: 3/10/2020                  #
 # Version: 0.1                                 #
 #                                              #
 #                                              #
@@ -32,6 +32,7 @@ function list_container {
 
 function install_docker {
     Clear-Host
+    # install of optional windows features needed by docker
     Write-Host "install of hyper-v requirements features"
     Enable-WindowsOptionalFeature -Online -FeatureName ("Microsoft-Hyper-V", "Containers", "VirtualMachinePlatform") -All -NoRestart
     
@@ -39,11 +40,12 @@ function install_docker {
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_wsl2,"$($home)\Downloads\wsl.msi")
     New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -Name wsl -PropertyType string -Value "$($home)\Downloads\wsl.msi"
 
+    # download and install of docker
     Write-Host "download and launch of docker desktop then reboot"
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_docker,"$env:APPDATA\installdocker.exe")
     Start-Process ("$env:APPDATA\installdocker.exe")
     
-    Write-Host "Press Enter to continue"
+    Write-Host "once docker installed, reboot then wsl install will pop up and once done, reboot again"
     Read-Host
     
 }
