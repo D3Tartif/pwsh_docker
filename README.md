@@ -2,10 +2,10 @@
 
 # 1/ Presentataion
 
-admin menu in powershell to install/remove docker, create/list/remove containers.
+admin menu in powershell to install docker, create/list/remove containers.
 
 
 # where am i
 
-install features -> test from fresh
-bug: read only %LOCALAPPDATA%\docker\wsl\distro  ???
+install docker ok, tested in a vm with fresh win install
+next step: create function
