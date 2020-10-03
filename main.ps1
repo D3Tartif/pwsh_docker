@@ -41,10 +41,10 @@ function install_docker {
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_docker,"$env:APPDATA\installdocker.exe")
     $p_installdocker = Start-Process ("$env:APPDATA\installdocker.exe")
     $p_installdocker.Start() | Out-Null
-    $p_installdocker.WaitForExit()
-
     
-    Restart-Computer
+    Write-Host "Press Enter to continue"
+    Read-Host
+    
 }
 
 # main
