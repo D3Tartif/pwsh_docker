@@ -35,7 +35,7 @@ function install_docker {
     
     # download of wsl 2 and add it to hklm to launch install at next restart
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_wsl2,"$($home)\Downloads\wsl.msi")
-    New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -Name wsl New-ItemProperty string -Value "$($home)\Downloads\wsl.msi"
+    New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce -Name wsl -PropertyType string -Value "$($home)\Downloads\wsl.msi"
 
     Write-Host "download and launch of docker desktop then reboot"
     (New-Object System.Net.WebClient).DownloadFile($downloadlink_docker,"$env:APPDATA\installdocker.exe")
