@@ -3,7 +3,7 @@
 # Author: Cedric F                             #
 # Creation data: 2/10/2020                     #
 # Last change date: 7/10/2020                  #
-# Version: 0.1                                 #
+# Version: 1                                 #
 #                                              #
 #                                              #
 ################################################
@@ -20,6 +20,30 @@ $downloadlink_wsl2 = "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_
 ###########
 # Functions
 ###########
+
+function get-container {
+    [CmdletBinding()]
+    Param ()
+
+    Begin
+    {
+    }
+    Process
+    {
+        Clear-Host
+        $docker_list = docker ps -a --format '{{.Names}}'
+        foreach($elements in $docker_list)
+        {
+            write-host "$($elements) - " -NoNewline
+            docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
+        }
+    }
+    End
+    {
+        write-host "Press enter to continue"
+    }
+    
+}
 
 function new-container {
     [CmdletBinding()]
@@ -56,7 +80,6 @@ function new-container {
                 0 { return }
                 Default { 
                     Write-Warning "Bad entry, please retry." 
-                    pause
                 }
             }
         } while (($menu_choice -lt 1) -and ($menu_choice -gt 4))
@@ -110,68 +133,45 @@ function remove-container {
                 1 { Clear-Host }
                 2 { 
                     Clear-Host
+                    docker ps -a --format '{{.Names}}'
                     Write-Host "Name of the container to delete: " -NoNewline
                     $name_container = Read-Host
                   }
                 0 { return }
                 Default { 
                     Write-Warning "Bad entry, please retry." 
-                    pause
                 }
             }
         } while (($menu_choice -lt 1) -and ($menu_choice -gt 2))
         
         if ( $menu_choice -eq 1)
         {
-            $name_container = docker ps --format '{{.Names}}'
+            $name_container = docker ps -a --format '{{.Names}}'
         }
-        else 
-        {
+        elseif ($menuchoice -eq 2) {
             # name of the container
             Clear-Host
-            get-container
+            docker ps -a --format '{{.Names}}'
             Write-Host ""
             Write-Host "Name of the container to delete: " -NoNewline
-            $name_container = Read-Host
-        }
-        
-
+            $name_container = Read-Host  
+        } 
+       
     }
     Process
     {
        foreach ($elements in $name_container)
        {
-           docker -rm -f "$($elements)"
+           docker rm -f "$($elements)"
        }
+       write-host "Delete of containers successful"
+       Write-Host "Press enter to continue"
     }
     End
     {
     }
 }
 
-function get-container {
-    [CmdletBinding()]
-    Param ()
-
-    Begin
-    {
-    }
-    Process
-    {
-        Clear-Host
-        $docker_list = docker ps --format '{{.Names}}'
-        foreach($elements in $docker_list)
-        {
-            write-host "$($elements) - " -NoNewline
-            docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
-        }
-    }
-    End
-    {
-        
-    }
-    
-}
 
 function install_docker {
     Clear-Host
