@@ -49,10 +49,10 @@ function new-container {
             $menu_choice = Read-Host
 
             switch ($menu_choice) {
-                1 { $container_image = centos }
-                2 { $container_image = ubuntu }
-                3 { $container_image = alpine }
-                4 { $container_image = Debian }
+                1 { $container_image = "centos" }
+                2 { $container_image = "ubuntu" }
+                3 { $container_image = "alpine" }
+                4 { $container_image = "debian" }
                 0 { return }
                 Default { 
                     Write-Warning "Bad entry, please retry." 
@@ -69,11 +69,13 @@ function new-container {
     Process
     {
        # launch of container
-       docker run -d --name $name_container $container_image
+       docker run -tid --name "$($name_container)" "$($container_image)"
     }
     End
     {
-        
+        $container_ip= docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($name_container)"
+        Clear-Host ""
+        Write-Host "Container $($name_container) created with an $($container_image) with Ip adress $($container_ip)"
     }
    
 }
