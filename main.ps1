@@ -69,7 +69,7 @@ function new-container {
     Process
     {
        # launch of container
-       docker run -d -name $name_container $container_image
+       docker run -d --name $name_container $container_image
     }
     End
     {
