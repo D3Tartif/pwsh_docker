@@ -2,31 +2,114 @@
 # Docker manage admin console                  #
 # Author: Cedric F                             #
 # Creation data: 2/10/2020                     #
-# Last change date: 3/10/2020                  #
+# Last change date: 7/10/2020                  #
 # Version: 0.1                                 #
 #                                              #
 #                                              #
 ################################################
 
+############
 # variables
+############
     # main variables
 $menu_choice
     # install docker variables
 $downloadlink_docker = "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe"
 $downloadlink_wsl2 = "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi"
 
+###########
 # Functions
+###########
 
-function create_container {
+function new-container {
+    [CmdletBinding()]
+    Param ()
+
+    Begin
+    {
+        do
+        {
+            # display of menu
+            Clear-Host
+            Write-Host "Add container menu"
+            Write-Host ""
+            Write-Host "#####################"
+            Write-Host ""
+            Write-Host "1: CentOs"
+            Write-Host "2: Ubuntu"
+            Write-Host "3: Alpine"
+            Write-Host "4: Debian"
+            Write-Host "0: Return Main menu"
+            Write-Host ""
+            Write-Host "######################"
+            Write-Host ""
+            Write-Host "Please, choose an option: " -NoNewline
+            
+            # storage of user entry
+            $menu_choice = Read-Host
+
+            switch ($menu_choice) {
+                1 { $container_image = centos }
+                2 { $container_image = ubuntu }
+                3 { $container_image = alpine }
+                4 { $container_image = Debian }
+                0 { return }
+                Default { 
+                    Write-Warning "Bad entry, please retry." 
+                    pause
+                }
+            }
+        } while (($menu_choice -lt 1) -and ($menu_choice -gt 4))
+        
+        # name of the container
+        Clear-Host
+        Write-Host "Name of the container : " -NoNewline
+        $name_container = Read-Host
+    }
+    Process
+    {
+       # launch of container
+       docker run -d -name $name_container $container_image
+    }
+    End
+    {
+        
+    }
    
 }
 
-function delete_container {
-   
+function remove-container {
+    [CmdletBinding()]
+    Param ()
+
+    Begin
+    {
+       
+
+    }
+    Process
+    {
+       
+    }
+    End
+    {
+    }
 }
 
-function list_container {
+function get-container {
+    [CmdletBinding()]
+    Param ()
 
+    Begin
+    {
+    }
+    Process
+    {
+       
+    }
+    End
+    {
+    }
     
 }
 
@@ -74,12 +157,15 @@ do
     
     # launch a function depending of the user choice
     switch ($menu_choice) {
-        1 { create_container }
-        2 { delete_container }
-        3 { list_container }
+        1 { new-container }
+        2 { remove-container }
+        3 { get-container }
         4 { install_docker }
-        0 { "Quitting" }
-        Default { "Bad entry, please retry." }
+        0 { "Quitting ..." }
+        Default { 
+            Write-Warning "Bad entry, please retry." 
+            pause
+        }
     }
     Read-Host
 
