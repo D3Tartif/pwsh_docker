@@ -75,7 +75,8 @@ function new-container {
     {
         $container_ip= docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($name_container)"
         Clear-Host ""
-        Write-Host "Container $($name_container) created with an $($container_image) with Ip adress $($container_ip)"
+        Write-Host "Container $($name_container) created with a $($container_image) image and with ip adress $($container_ip)"
+        Write-Host "press enter to continue"
     }
    
 }
@@ -86,7 +87,44 @@ function remove-container {
 
     Begin
     {
-       
+        do
+        {
+            # display of menu
+            Clear-Host
+            Write-Host "Remove container menu"
+            Write-Host ""
+            Write-Host "#####################"
+            Write-Host ""
+            Write-Host "1: All"
+            Write-Host "2: One"
+            Write-Host "0: Return Main menu"
+            Write-Host ""
+            Write-Host "######################"
+            Write-Host ""
+            Write-Host "Please, choose an option: " -NoNewline
+            
+            # storage of user entry
+            $menu_choice = Read-Host
+
+            switch ($menu_choice) {
+                1 { Clear-Host }
+                2 { 
+                    Clear-Host
+                    Write-Host "Name of the container to delete: " -NoNewline
+                    $name_container = Read-Host
+                  }
+                0 { return }
+                Default { 
+                    Write-Warning "Bad entry, please retry." 
+                    pause
+                }
+            }
+        } while (($menu_choice -lt 1) -and ($menu_choice -gt 2))
+        
+        # name of the container
+        Clear-Host
+        Write-Host "Name of the container : " -NoNewline
+        $name_container = Read-Host
 
     }
     Process
@@ -107,7 +145,13 @@ function get-container {
     }
     Process
     {
-       
+        Clear-Host
+        $docker_list = docker ps --format '{{.Names}}'
+        foreach($elements in $docker_list)
+        {
+            write-host "$($elements) - " -NoNewline
+            docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
+        }
     }
     End
     {
