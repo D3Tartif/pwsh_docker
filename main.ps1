@@ -70,13 +70,14 @@ function new-container {
     {
        # launch of container
        docker run -tid --name "$($name_container)" "$($container_image)"
+       $container_ip= docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($name_container)"
+       Clear-Host ""
+       Write-Host "Container $($name_container) created with a $($container_image) image and with ip adress $($container_ip)"
+       Write-Host "press enter to continue"
     }
     End
     {
-        $container_ip= docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($name_container)"
-        Clear-Host ""
-        Write-Host "Container $($name_container) created with a $($container_image) image and with ip adress $($container_ip)"
-        Write-Host "press enter to continue"
+        
     }
    
 }
