@@ -121,15 +121,28 @@ function remove-container {
             }
         } while (($menu_choice -lt 1) -and ($menu_choice -gt 2))
         
-        # name of the container
-        Clear-Host
-        Write-Host "Name of the container : " -NoNewline
-        $name_container = Read-Host
+        if ( $menu_choice -eq 1)
+        {
+            $name_container = docker ps --format '{{.Names}}'
+        }
+        else 
+        {
+            # name of the container
+            Clear-Host
+            get-container
+            Write-Host ""
+            Write-Host "Name of the container to delete: " -NoNewline
+            $name_container = Read-Host
+        }
+        
 
     }
     Process
     {
-       
+       foreach ($elements in $name_container)
+       {
+           docker -rm -f "$($elements)"
+       }
     }
     End
     {
@@ -155,6 +168,7 @@ function get-container {
     }
     End
     {
+        
     }
     
 }
