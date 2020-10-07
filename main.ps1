@@ -3,7 +3,7 @@
 # Author: Cedric F                             #
 # Creation data: 2/10/2020                     #
 # Last change date: 7/10/2020                  #
-# Version: 1                                 #
+# Version: 1                                   #
 #                                              #
 #                                              #
 ################################################
@@ -34,8 +34,11 @@ function get-container {
         $docker_list = docker ps -a --format '{{.Names}}'
         foreach($elements in $docker_list)
         {
-            write-host "$($elements) - " -NoNewline
-            docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
+            
+            $ipaddress = docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
+            $status = docker inspect -f '{{.State.Status}}' "$($elements)"
+
+            write-host "$($elements) - $($ipaddress) - $($status)"
         }
     }
     End
