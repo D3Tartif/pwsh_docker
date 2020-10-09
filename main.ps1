@@ -2,7 +2,7 @@
 # Docker manage admin console                  #
 # Author: Cedric F                             #
 # Creation data: 2/10/2020                     #
-# Last change date: 7/10/2020                  #
+# Last change date: 9/10/2020                  #
 # Version: 1                                   #
 #                                              #
 #                                              #
@@ -31,13 +31,17 @@ function get-container {
     Process
     {
         Clear-Host
+        # get names of all containers
         $docker_list = docker ps -a --format '{{.Names}}'
+
+        # loop of each container
         foreach($elements in $docker_list)
         {
-            
+            # get ip of current container
             $ipaddress = docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
+            # get status of current container
             $status = docker inspect -f '{{.State.Status}}' "$($elements)"
-
+            # send to host the name, the ip and the status of  the current container
             write-host "$($elements) - $($ipaddress) - $($status)"
         }
     }
@@ -54,6 +58,7 @@ function new-container {
 
     Begin
     {
+        # loop to display menu until a valid choice is made
         do
         {
             # display of menu
@@ -96,6 +101,7 @@ function new-container {
     {
        # launch of container
        docker run -tid --name "$($name_container)" "$($container_image)"
+       # get ip of container and display it to host
        $container_ip= docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($name_container)"
        Clear-Host ""
        Write-Host "Container $($name_container) created with a $($container_image) image and with ip adress $($container_ip)"
@@ -114,6 +120,7 @@ function remove-container {
 
     Begin
     {
+        # loop to display menu until a valid choice is made
         do
         {
             # display of menu
@@ -135,19 +142,16 @@ function remove-container {
 
             switch ($menu_choice) {
                 1 { Clear-Host }
-                2 { 
-                    Clear-Host
-                    docker ps -a --format '{{.Names}}'
-                    Write-Host "Name of the container to delete: " -NoNewline
-                    $name_container = Read-Host
-                  }
+                2 { Clear-Host }
                 0 { return }
                 Default { 
+                    # wrong entry of user
                     Write-Warning "Bad entry, please retry." 
                 }
             }
         } while (($menu_choice -lt 1) -and ($menu_choice -gt 2))
         
+        # depending of the choice made, assign a var the list of the containers to delete
         if ( $menu_choice -eq 1)
         {
             $name_container = docker ps -a --format '{{.Names}}'
@@ -155,7 +159,9 @@ function remove-container {
         elseif ($menuchoice -eq 2) {
             # name of the container
             Clear-Host
+            # list containers
             docker ps -a --format '{{.Names}}'
+            # user entry for the container to delete
             Write-Host ""
             Write-Host "Name of the container to delete: " -NoNewline
             $name_container = Read-Host  
@@ -164,7 +170,8 @@ function remove-container {
     }
     Process
     {
-       foreach ($elements in $name_container)
+       # remove of the containers in the var $name_container
+        foreach ($elements in $name_container)
        {
            docker rm -f "$($elements)"
        }
