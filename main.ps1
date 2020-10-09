@@ -183,6 +183,37 @@ function remove-container {
     }
 }
 
+function start-container {
+    [CmdletBinding()]
+    Param ()
+
+    Begin
+    {
+    }
+    Process
+    {
+        Clear-Host
+        # get names of all containers stopped
+        $docker_list = docker ps -a --format '{{.Names}}'
+
+        # loop of each container
+        foreach($elements in $docker_list)
+        {
+            # get ip of current container
+            $ipaddress = docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
+            # get status of current container
+            $status = docker inspect -f '{{.State.Status}}' "$($elements)"
+            # send to host the name, the ip and the status of  the current container
+            write-host "$($elements) - $($ipaddress) - $($status)"
+        }
+    }
+    End
+    {
+        write-host "Press enter to continue"
+    }
+    
+}
+
 
 function install_docker {
     Clear-Host
@@ -216,7 +247,8 @@ do
     Write-Host "1: Create containers"
     Write-Host "2: Delete containers"
     Write-Host "3: List containers"
-    Write-Host "4: Install docker"
+    Write-Host "4: Start existing container"
+    Write-Host "9: Install docker"
     Write-Host "0: Quit console"
     Write-Host ""
     Write-Host "######################"
@@ -231,7 +263,8 @@ do
         1 { new-container }
         2 { remove-container }
         3 { get-container }
-        4 { install_docker }
+        4 { start-container }
+        9 { install_docker }
         0 { "Quitting ..." }
         Default { 
             Write-Warning "Bad entry, please retry." 
