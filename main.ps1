@@ -189,22 +189,81 @@ function start-container {
 
     Begin
     {
-    }
-    Process
-    {
+        # loop to display menu until a valid choice is made
+        do
+        {
+            # display of menu
+            Clear-Host
+            Write-Host "Start container menu"
+            Write-Host ""
+            Write-Host "#####################"
+            Write-Host ""
+            Write-Host "1: All"
+            Write-Host "2: One"
+            Write-Host "0: Return Main menu"
+            Write-Host ""
+            Write-Host "######################"
+            Write-Host ""
+            Write-Host "Please, choose an option: " -NoNewline
+            
+            # storage of user entry
+            $menu_choice = Read-Host
+
+            switch ($menu_choice) {
+                1 { Clear-Host }
+                2 { Clear-Host }
+                0 { return }
+                Default { 
+                    # wrong entry of user
+                    Write-Warning "Bad entry, please retry." 
+                }
+            }
+        } while (($menu_choice -lt 1) -and ($menu_choice -gt 2))
+
         Clear-Host
         # get names of all containers stopped
         $docker_list = docker ps -a --format '{{.Names}}'
-
-        # loop of each container
-        foreach($elements in $docker_list)
+    }
+    Process
+    {
+        if( $menu_choice -eq 1)
         {
-            # get ip of current container
-            $ipaddress = docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
-            # get status of current container
-            $status = docker inspect -f '{{.State.Status}}' "$($elements)"
-            # send to host the name, the ip and the status of  the current container
-            write-host "$($elements) - $($ipaddress) - $($status)"
+            # loop of each container
+            foreach($elements in $docker_list)
+            {
+                # get status of current container
+                $status = docker inspect -f '{{.State.Status}}' "$($elements)"
+                if( $status -eq "exited")
+                {
+                    docker container start "$($elements)"
+                    $ipaddress = docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($elements)"
+                    # send to host the name, the ip and the status of  the current container
+                    write-host "$($elements) - $($ipaddress)"
+                }
+            }
+        }
+        elseif ( $menu_choice -eq 2 ) 
+        {
+            # loop of each container
+            foreach($elements in $docker_list)
+            {
+                # get status of current container
+                $status = docker inspect -f '{{.State.Status}}' "$($elements)"
+                if( $status -eq "exited")
+                {
+                    write-host "$($elements) - $($status)"
+                }
+            }
+            Write-Host ""
+            Write-Host "Name of the container to delete: " -NoNewline
+            $name_container = Read-Host
+            Write-Host "Start of : " -NoNewline
+            docker container start "$($name_container)"
+            $ipaddress = docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$($name_container)"
+            $status = docker inspect -f '{{.State.Status}}' "$($name_container)"
+            Write-Host "Status: "
+            write-host "$($name_container) - $($ipaddress) - $($status)"
+
         }
     }
     End
